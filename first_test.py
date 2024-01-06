@@ -32,7 +32,7 @@ def mono_color():
     image = image.point(lambda x: 0 if x < 100 else 255, '1')
     #saves the screenshot
     image.save(r'pictures/mono_color.png')
-    return image
+    return imagea
 
 #finds where the compass is on screen, and returns the coordinates of the compass
 def find_compass():
