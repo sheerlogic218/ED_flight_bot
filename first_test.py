@@ -11,6 +11,7 @@ import os
 import pytesseract
 from PIL import Image
 from PIL import ImageDraw
+from PIL import ImageChops
 
 
 #takes a screenshot and saves it to elite_dangerous_bot
@@ -41,17 +42,39 @@ def find_compass():
     if compass_location != None:
         print(compass_location)
         #draws a box around the found compass
-        bounds = 45
+        bounds = 35
         box = (compass_location[0]-bounds, compass_location[1]-bounds, compass_location[0]+bounds, compass_location[1]+bounds)
         #saves the screenshot
         screen_shot().crop(box).save(r'pictures/found_compass.png')
-
-
     else:
         print('compass not found')
+
+#finds the target on the compass, and returns the deviation from center
+def target_deviation():
+    #loads the found compass image
+    found_compass = Image.open('pictures/found_compass.png')
+    compass_sample = Image.open('pictures/compass_sample.png')
+    #converts images to same type
+    found_compass = found_compass.convert('RGB')
+    compass_sample = compass_sample.convert('RGB')
+    #finds the difference between the two images
+    solid_difference = ImageChops.difference(found_compass, compass_sample)
+    #saves the difference
+    solid_difference.save(r'pictures/solid_difference.png')
+    
+    #finds coordinates of the brightest pixel
+    
+
+
+
+
+
+
+
 
 while True:
     time.sleep(1)
     #screen_shot()
     #mono_color()
     find_compass()
+    target_deviation()
