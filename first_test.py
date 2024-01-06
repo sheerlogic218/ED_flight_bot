@@ -51,19 +51,19 @@ def find_compass():
 
 #finds the target on the compass, and returns the deviation from center
 def target_deviation():
-    #loads the found compass image
     found_compass = Image.open('pictures/found_compass.png')
     compass_sample = Image.open('pictures/compass_sample.png')
-    #converts images to same type
     found_compass = found_compass.convert('RGB')
     compass_sample = compass_sample.convert('RGB')
-    #finds the difference between the two images
     solid_difference = ImageChops.difference(found_compass, compass_sample)
-    #saves the difference
     solid_difference.save(r'pictures/solid_difference.png')
-    
-    #finds coordinates of the brightest pixel
-    
+    solid_difference = np.array(solid_difference)
+    solid_difference = cv2.cvtColor(solid_difference, cv2.COLOR_BGR2GRAY)
+    brightest = cv2.minMaxLoc(solid_difference)
+    coords = brightest[3]
+    deviation = (coords[0]-35, coords[1]-35)
+    print(coords)
+    print(deviation) 
 
 
 
