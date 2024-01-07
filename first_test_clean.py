@@ -70,7 +70,6 @@ def target_deviation() -> tuple:
     deviation = (coords[0] - 35, coords[1] - 35)
     return deviation
 
-# Outputs the deviation and target position
 def output(deviation: tuple):
     """
     Outputs the deviation and target position
