@@ -1,3 +1,8 @@
+#this will be the first proof of concept for the bot
+#this will take screen shots of the game convert to mono color, and find the compass and crop accordingly
+#it then finds whether the target is solid of hollow and how far away from the center it is
+#this is not a normal compass, but a 3d compass that shows the direction of the target in 3d space, an elite dangerous compass
+
 import cv2
 import numpy as np
 import pyautogui
@@ -31,12 +36,7 @@ def find_compass():
     if compass_location is not None:
         print(compass_location)
         bounds = 35
-        box = (
-            compass_location[0] - bounds,
-            compass_location[1] - bounds,
-            compass_location[0] + bounds,
-            compass_location[1] + bounds
-        )
+        box = (compass_location[0]-bounds, compass_location[1]-bounds, compass_location[0]+bounds, compass_location[1]+bounds)
         screen_shot().crop(box).save(r'pictures/found_compass.png')
     else:
         print('compass not found')
@@ -78,6 +78,10 @@ def output(deviation):
         #target is centered
         print('target is centered')
     print(deviation)
+
+
+
+
 
 while True:
     time.sleep(1)
