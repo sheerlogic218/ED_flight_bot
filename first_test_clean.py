@@ -77,27 +77,51 @@ def output(deviation: tuple):
     Args:
         deviation (tuple): Deviation from center
     """
-    if abs(deviation[0]) < 4 and abs(deviation[1]) > 4:
+    if abs(deviation[0]) < 5 and abs(deviation[1]) > 5:
         # Target is horizontally centered
-        if deviation[1] > 4:
+        if deviation[1] > 5:
             # Target is above
             print('Target is below')
-        elif deviation[1] < -4:
+        elif deviation[1] < -5:
             # Target is below
             print('Target is above')
-    elif abs(deviation[0]) > 4:
+    elif abs(deviation[0]) > 5:
         # Target is not horizontally centered
-        if deviation[0] > 4:
+        if deviation[0] > 5:
             # Target is to the right
             print('Target is to the right')
-        elif deviation[0] < -4:
+        elif deviation[0] < -5:
             # Target is to the left
             print('Target is to the left')
-    elif abs(deviation[0]) < 4 and abs(deviation[1]) < 4:
+    elif abs(deviation[0]) < 5 and abs(deviation[1]) < 5:
         # Target is centered
         print('Target is centered')
+        check_centered()
     
     print(deviation)
+
+def check_centered():
+    """
+    Checks if the target is centered or anticentered
+    """
+    #finds average brightness of the center of the found compass
+    corners = [(30,30),(39,30),(30,39),(39,39)]
+    found_compass = Image.open('pictures/found_compass.png')
+    gs_compass = found_compass.convert('L')
+    brightness = []
+    #average every pixel in the square cornered by corners
+    for x in range(30,40):
+        for y in range(30,40):
+            brightness.append(gs_compass.getpixel((x,y)))
+    avg_brightness = sum(brightness)/len(brightness)
+    print(avg_brightness)
+    if avg_brightness > 100:
+        print('Target is centered')
+    elif avg_brightness > 30:
+        print('Target is anticentered')
+    else:
+        print('Target is not centered or anticentered')
+
 
 if __name__ == '__main__':
     while True:
@@ -107,3 +131,4 @@ if __name__ == '__main__':
         find_compass()
         dev = target_deviation()
         output(dev)
+        #check_centered()
