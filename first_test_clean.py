@@ -73,7 +73,7 @@ def find_compass():
     Finds where the compass is on screen, and returns the coordinates of the compass
     """
     compass = Image.open('pictures/compass_sample.png')
-    compass_location = pyautogui.locateCenterOnScreen(compass, grayscale=True, confidence=0.7)
+    compass_location = pyautogui.locateCenterOnScreen(compass, grayscale=True, confidence=0.65)
     if compass_location is not None:
         print(compass_location)
         bounds = 35
@@ -84,10 +84,10 @@ def find_compass():
             compass_location[1] + bounds
         )
         screen_shot().crop(box).save(r'pictures/found_compass.png')
+        return True
     else:
-        print('Compass not found')
-        gamepad.left_joystick_float(0, 0)
-        gamepad.update()
+        print('Compass not found, pitching up')
+        return False
 
 def target_deviation() -> tuple:
     """
@@ -106,7 +106,7 @@ def target_deviation() -> tuple:
     solid_difference = cv2.cvtColor(solid_difference, cv2.COLOR_BGR2GRAY)
     brightest = cv2.minMaxLoc(solid_difference)
     coords = brightest[3]
-    deviation = (coords[0] - 35, coords[1] - 35)
+    deviation = (coords[0] - 35 + 1 , coords[1] - 35 + 1)
     return deviation
 
 def output(deviation: tuple):
@@ -121,26 +121,26 @@ def output(deviation: tuple):
         if deviation[1] > 5:
             # Target is below, left joystick up
             print('Target is below')
-            gamepad.left_joystick_float(0, 0.5)
-            gamepad.update()
+            gamepad.left_joystick_float(0, 0.6)
         elif deviation[1] < -5:
             # Target is above, left joystick down
             print('Target is above')
-            gamepad.left_joystick_float(0, -0.5)
+            gamepad.left_joystick_float(0, -0.6)
     elif abs(deviation[0]) > 5:
         # Target is not horizontally centered
         if deviation[0] > 5:
             # Target is to the right, left joystick right
             print('Target is to the right')
-            gamepad.left_joystick_float(0.5, 0)
+            gamepad.left_joystick_float(0.6, 0)
         elif deviation[0] < -5:
             # Target is to the left, left joystick left
             print('Target is to the left')
-            gamepad.left_joystick_float(-0.5, 0)
+            gamepad.left_joystick_float(-0.6, 0)
     elif abs(deviation[0]) < 5 and abs(deviation[1]) < 5:
         # Target is centered
         print('Target is centered')
         gamepad.left_joystick_float(0, 0)
+        gamepad.update()
         check_centered()
     gamepad.update()
     print(deviation)
@@ -161,6 +161,7 @@ def check_centered():
     print(avg_brightness)
     if avg_brightness > 100:
         print('Target is centered')
+        exit()
     elif avg_brightness > 30:
         print('Target is anticentered')
     else:
@@ -176,6 +177,11 @@ if __name__ == '__main__':
         #time.sleep(0.2)
         # screen_shot()
         # mono_color()
-        find_compass()
-        dev = target_deviation()
-        output(dev)
+        if find_compass():
+            dev = target_deviation()
+            output(dev)
+        else:
+            print("attempting to pitch up")
+            time.sleep(1)
+            gamepad.left_joystick_float(0, -0.5)
+            gamepad.update()
