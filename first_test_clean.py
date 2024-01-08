@@ -5,6 +5,43 @@ import numpy as np
 import pyautogui
 from PIL import Image, ImageChops
 
+import vgamepad as vg
+
+def tap_button(button):
+    """
+    Presses a button on the controller
+    
+    Args:
+        button (vg.XUSB_BUTTON): Button to press
+    """
+    gamepad.press_button(button)
+    gamepad.update()
+    time.sleep(0.05)
+    gamepad.release_button(button)
+    gamepad.update()
+
+def set_up_controller():
+    """
+    Sets up the controller buttons as global variables
+    """
+    
+    global a, b, x, y, lb, rb, back, start, ls, rs, up, down, left, right, gamepad
+    gamepad = vg.VX360Gamepad()
+    a = vg.XUSB_BUTTON.XUSB_GAMEPAD_A
+    b = vg.XUSB_BUTTON.XUSB_GAMEPAD_B
+    x = vg.XUSB_BUTTON.XUSB_GAMEPAD_X
+    y = vg.XUSB_BUTTON.XUSB_GAMEPAD_Y
+    lb = vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_SHOULDER
+    rb = vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_SHOULDER
+    back = vg.XUSB_BUTTON.XUSB_GAMEPAD_BACK
+    start = vg.XUSB_BUTTON.XUSB_GAMEPAD_START
+    ls = vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_THUMB
+    rs = vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_THUMB
+    up = vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP
+    down = vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN
+    left = vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT
+    right = vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT
+
 
 def screen_shot() -> Image:
     """
@@ -49,6 +86,8 @@ def find_compass():
         screen_shot().crop(box).save(r'pictures/found_compass.png')
     else:
         print('Compass not found')
+        gamepad.left_joystick_float(0, 0)
+        gamepad.update()
 
 def target_deviation() -> tuple:
     """
@@ -80,24 +119,30 @@ def output(deviation: tuple):
     if abs(deviation[0]) < 5 and abs(deviation[1]) > 5:
         # Target is horizontally centered
         if deviation[1] > 5:
-            # Target is above
+            # Target is below, left joystick up
             print('Target is below')
+            gamepad.left_joystick_float(0, 0.5)
+            gamepad.update()
         elif deviation[1] < -5:
-            # Target is below
+            # Target is above, left joystick down
             print('Target is above')
+            gamepad.left_joystick_float(0, -0.5)
     elif abs(deviation[0]) > 5:
         # Target is not horizontally centered
         if deviation[0] > 5:
-            # Target is to the right
+            # Target is to the right, left joystick right
             print('Target is to the right')
+            gamepad.left_joystick_float(0.5, 0)
         elif deviation[0] < -5:
-            # Target is to the left
+            # Target is to the left, left joystick left
             print('Target is to the left')
+            gamepad.left_joystick_float(-0.5, 0)
     elif abs(deviation[0]) < 5 and abs(deviation[1]) < 5:
         # Target is centered
         print('Target is centered')
+        gamepad.left_joystick_float(0, 0)
         check_centered()
-    
+    gamepad.update()
     print(deviation)
 
 def check_centered():
@@ -105,7 +150,6 @@ def check_centered():
     Checks if the target is centered or anticentered
     """
     #finds average brightness of the center of the found compass
-    corners = [(30,30),(39,30),(30,39),(39,39)]
     found_compass = Image.open('pictures/found_compass.png')
     gs_compass = found_compass.convert('L')
     brightness = []
@@ -123,12 +167,15 @@ def check_centered():
         print('Target is not centered or anticentered')
 
 
+
 if __name__ == '__main__':
+    set_up_controller()
+    time.sleep(1)
+    tap_button(a)
     while True:
-        time.sleep(1)
+        #time.sleep(0.2)
         # screen_shot()
         # mono_color()
         find_compass()
         dev = target_deviation()
         output(dev)
-        #check_centered()
