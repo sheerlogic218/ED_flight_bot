@@ -109,7 +109,7 @@ def check_centered():
     found_compass = Image.open('pictures/found_compass.png')
     gs_compass = found_compass.convert('L')
     brightness = []
-    #average every pixel in the square cornered by corners
+    #finds average brightness of the center of the found compass
     for x in range(30,40):
         for y in range(30,40):
             brightness.append(gs_compass.getpixel((x,y)))
