@@ -3,15 +3,14 @@
 #it then finds whether the target is solid of hollow and how far away from the center it is
 #this is not a normal compass, but a 3d compass that shows the direction of the target in 3d space, an elite dangerous compass
 
+import os
+import time
+
 import cv2
 import numpy as np
 import pyautogui
-import time
-import os
 import pytesseract
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageChops
+from PIL import Image, ImageChops, ImageDraw
 
 
 #takes a screenshot and saves it to elite_dangerous_bot
